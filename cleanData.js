@@ -59,9 +59,6 @@ fs.readFile('modified_sms_v2.xml', (err, data) => {
     });
 
     
-
-
-
   });
 });
 
