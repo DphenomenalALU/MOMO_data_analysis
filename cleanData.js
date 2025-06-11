@@ -51,17 +51,16 @@ fs.readFile('modified_sms_v2.xml', (err, data) => {
       const body =   sms.$.body
       const service_centre = sms.$.service_center
       const date = sms.$.readable_date
-      // populateDatabase(protocol, address, type, body, service_centre, date );
+      populateDatabase(protocol, address, type, body, service_centre, date );
 
 
-        console.log('Date:', sms.$.readable_date);
-        console.log('Message:', sms.$.body);
+        // console.log('Date:', sms.$.readable_date);
+        // console.log('Message:', sms.$.body);
     });
 
     
 
 
-    // console.dir(result, { depth: null, colors: true });
 
   });
 });
