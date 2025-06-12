@@ -16,17 +16,29 @@ const db = new pg.Client({
 });
 db.connect();
 
+
 async function populateDatabase(protocol, address, type, body, service_centre, date ) {
 
-  try {
-    await db.query(
-        'INSERT INTO sms_info (protocol, address, typ, body, service_centre, date ) VALUES ($1, $2, $3, $4, $5, $6)',
-        [protocol, address, type, body, service_centre, date ]
-    );
+  const exist = await db.query(
+    "SELECT * FROM sms_info"
+  )
+
+  if (exist.rows.length == 0) {
+    try {
+      await db.query(
+          'INSERT INTO sms_info (protocol, address, typ, body, service_centre, date ) VALUES ($1, $2, $3, $4, $5, $6)',
+          [protocol, address, type, body, service_centre, date ]
+      );
     
-  } catch (error) {
-    console.log('error inserting data into database: ', error);
+    } catch (error) {
+      console.log('error inserting data into database: ', error);
+    }
+
+    
+  } else {
+    console.log('database is already populated')
   }
+
 }
 
 
@@ -51,11 +63,10 @@ fs.readFile('modified_sms_v2.xml', (err, data) => {
       const body =   sms.$.body
       const service_centre = sms.$.service_center
       const date = sms.$.readable_date
+
+      // make sure your db is empty beffore you run this file
       populateDatabase(protocol, address, type, body, service_centre, date );
 
-
-        // console.log('Date:', sms.$.readable_date);
-        // console.log('Message:', sms.$.body);
     });
 
     

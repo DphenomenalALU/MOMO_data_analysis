@@ -1,6 +1,7 @@
 import express from 'express'
-import pg, { Result } from 'pg'
+import pg from 'pg'
 import env from 'dotenv'
+import * as utils from './util.js'
 
 const app = express();
 const port = 3000;
@@ -14,54 +15,43 @@ const db = new pg.Client({
   password: process.env.PG_PASSWORD,
   port: process.env.PG_PORT,
 });
-db.connect();
+
+db.connect()
+.then(() => console.log('server.js Connected to DB'))
+.catch(err => console.error('server.js DB connection error', err));
 
 app.use(express.urlencoded({ extended: true }));
 
-let receivedMoney;
 
 app.get('/', async (req, res) => {
   res.send('Hello')
-  await countReceived()
-  console.log(receivedMoney)
-  console.log(receivedMoney.length)
-  
+  await utils.getIncome();
+  await utils.getDeposite();
+  await utils.getCodePayment();
+  await utils.getTransferred();
+  await utils.getThirdParty();
+  await utils.getPowerBill();
+  await utils.getBundles();
+  await utils.getAirtime();
+  await utils.getBankTransfer();
+  await utils.getinternetBundle();
+  await utils.getWithdrawn();
+
+
+  // console.log(utils.airtime)
+  console.log("Internet Bundles: ",utils.internetBundle.length)
+  console.log("Withdrawals from an Agent: ",utils.withdrawal.length)
+  console.log("Bank transfers : ",utils.bankTransfer.length)
+  console.log("Airtime: ",utils.airtime.length)
+  console.log("Bundles: ",utils.bundles.length)
+  console.log("MTN cash power bill payment: ",utils.cashPowerBill.length)
+  console.log("Third party initiated transfers: ",utils.thirdPartyInitiated.length)
+  console.log("Mobile transferred money",utils.transferredMoney.length)
+  console.log("Payment to Code Holders",utils.codePayment.length)
+  console.log("Bank deposit transactions",utils.bankDeposite.length)
+  console.log("Incoming Money",utils.incomingMoney.length)
+
 });
-
-
-// A function that filters the database for messages indicating receiving money and returrns an arrray of those messages
-async function countReceived() {
-  try {
-    const result = await db.query(
-      "SELECT * FROM sms_info WHERE body LIKE '%' || 'You have received' || '%';",
-    )
-    receivedMoney = result.rows
-
-  } catch (error) {
-    console.log('error finding data: ', error)
-  }
-  return receivedMoney 
-}
-
-
-// A function to test if there are aany dublicates in the db the number of records in the table is 1691 if the output is the same number then there are no dublicates
-// async function testunique() {
-//   try {
-//     const uniqueValues = await db.query(
-//       "SELECT DISTINCT body, date FROM sms_info"
-//     )
-//     console.log(uniqueValues.rows.length)
-//   } catch (error) {
-//     console.log('error finding data: ', error)
-//   }
-// }
-
-// // testunique()
-
-
-
-
-
 
 
 app.listen(port, () => {
