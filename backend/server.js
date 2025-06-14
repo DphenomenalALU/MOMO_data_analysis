@@ -1,6 +1,7 @@
 import express from 'express'
-import pg, { Result } from 'pg'
+import pg from 'pg'
 import env from 'dotenv'
+import * as utils from './util.js'
 
 const app = express();
 const port = 3000;
@@ -14,14 +15,42 @@ const db = new pg.Client({
   password: process.env.PG_PASSWORD,
   port: process.env.PG_PORT,
 });
-db.connect();
+
+db.connect()
+.then(() => console.log('server.js Connected to DB'))
+.catch(err => console.error('server.js DB connection error', err));
 
 app.use(express.urlencoded({ extended: true }));
 
+
 app.get('/', async (req, res) => {
   res.send('Hello')
+  await utils.getIncome();
+  await utils.getDeposite();
+  await utils.getCodePayment();
+  await utils.getTransferred();
+  await utils.getThirdParty();
+  await utils.getPowerBill();
+  await utils.getBundles();
+  await utils.getAirtime();
+  await utils.getBankTransfer();
+  await utils.getinternetBundle();
+  await utils.getWithdrawn();
 
-  
+
+  // console.log(utils.airtime)
+  console.log("Internet Bundles: ",utils.internetBundle.length)
+  console.log("Withdrawals from an Agent: ",utils.withdrawal.length)
+  console.log("Bank transfers : ",utils.bankTransfer.length)
+  console.log("Airtime: ",utils.airtime.length)
+  console.log("Bundles: ",utils.bundles.length)
+  console.log("MTN cash power bill payment: ",utils.cashPowerBill.length)
+  console.log("Third party initiated transfers: ",utils.thirdPartyInitiated.length)
+  console.log("Mobile transferred money",utils.transferredMoney.length)
+  console.log("Payment to Code Holders",utils.codePayment.length)
+  console.log("Bank deposit transactions",utils.bankDeposite.length)
+  console.log("Incoming Money",utils.incomingMoney.length)
+
 });
 
 
