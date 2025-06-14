@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MTN MoMo Transaction Dashboard</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>MTN MoMo Transaction Dashboard</h1>
+            <div class="search-filter">
+                <input type="text" id="searchInput" placeholder="Search transactions...">
+                <select id="transactionType">
+                    <option value="all">All Transactions</option>
+                    <option value="incoming">Incoming Money</option>
+                    <option value="code">Payments to Code Holders</option>
+                    <option value="transfer">Transfers to Mobile Numbers</option>
+                    <option value="bank">Bank Deposits</option>
+                    <option value="airtime">Airtime Bill Payments</option>
+                    <option value="power">Cash Power Bill Payments</option>
+                    <option value="thirdParty">Third Party Transactions</option>
+                    <option value="withdrawal">Withdrawals from Agents</option>
+                    <option value="bankTransfer">Bank Transfers</option>
+                    <option value="bundle">Internet and Voice Bundles</option>
+                </select>
+                <input type="date" id="dateFilter">
+            </div>
+        </header>
+
+        <main>
+            <section class="summary-cards">
+                <div class="card">
+                    <h3>Total Transactions</h3>
+                    <p id="totalTransactions">0</p>
+                </div>
+                <div class="card">
+                    <h3>Total Volume (RWF)</h3>
+                    <p id="totalVolume">0</p>
+                </div>
+                <div class="card">
+                    <h3>Average Transaction (RWF)</h3>
+                    <p id="averageTransaction">0</p>
+                </div>
+            </section>
+
+            <section class="charts">
+                <div class="chart-container">
+                    <h2>Transaction Distribution</h2>
+                    <canvas id="transactionPieChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <h2>Monthly Transaction Volume</h2>
+                    <canvas id="monthlyBarChart"></canvas>
+                </div>
+            </section>
+
+            <section class="transactions">
+                <h2>Recent Transactions</h2>
+                <div class="table-container">
+                    <table id="transactionsTable">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Type</th>
+                                <th>Amount (RWF)</th>
+                                <th>Details</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="transactionsBody"></tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/charts.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html> 

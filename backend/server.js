@@ -2,10 +2,24 @@ import express from 'express'
 import pg from 'pg'
 import env from 'dotenv'
 import * as utils from './util.js'
+import cors from 'cors'
+import path from 'path'
+import { fileURLToPath } from 'url'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 const app = express();
 const port = 3000;
 env.config();
+
+// Middleware
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Serve static files from frontend directory
+app.use(express.static(path.join(__dirname, '../frontend')));
 
 //Create pg instance
 const db = new pg.Client({
@@ -20,42 +34,50 @@ db.connect()
 .then(() => console.log('server.js Connected to DB'))
 .catch(err => console.error('server.js DB connection error', err));
 
-app.use(express.urlencoded({ extended: true }));
-
-
-app.get('/', async (req, res) => {
-  res.send('Hello')
-  await utils.getIncome();
-  await utils.getDeposite();
-  await utils.getCodePayment();
-  await utils.getTransferred();
-  await utils.getThirdParty();
-  await utils.getPowerBill();
-  await utils.getBundles();
-  await utils.getAirtime();
-  await utils.getBankTransfer();
-  await utils.getinternetBundle();
-  await utils.getWithdrawn();
-
-
-  // console.log(utils.airtime)
-  console.log("Internet Bundles: ",utils.internetBundle.length)
-  console.log("Withdrawals from an Agent: ",utils.withdrawal.length)
-  console.log("Bank transfers : ",utils.bankTransfer.length)
-  console.log("Airtime: ",utils.airtime.length)
-  console.log("Bundles: ",utils.bundles.length)
-  console.log("MTN cash power bill payment: ",utils.cashPowerBill.length)
-  console.log("Third party initiated transfers: ",utils.thirdPartyInitiated.length)
-  console.log("Mobile transferred money",utils.transferredMoney.length)
-  console.log("Payment to Code Holders",utils.codePayment.length)
-  console.log("Bank deposit transactions",utils.bankDeposite.length)
-  console.log("Incoming Money",utils.incomingMoney.length)
-
+// Serve frontend
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend/index.html'));
 });
 
+// API endpoints
+app.get('/api/transactions', async (req, res) => {
+  try {
+    // TODO: Implement filters from req.query
+    const transactions = await utils.getAllTransactions();
+    res.json(transactions);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch transactions' });
+  }
+});
+
+app.get('/api/stats', async (req, res) => {
+  try {
+    const stats = {
+      totalTransactions: await utils.getTotalTransactions(),
+      totalVolume: await utils.getTotalVolume(),
+      averageTransaction: await utils.getAverageTransaction()
+    };
+    res.json(stats);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch stats' });
+  }
+});
+
+app.get('/api/trends/monthly', async (req, res) => {
+  try {
+    const trends = {
+      monthly: await utils.getMonthlyTrends(),
+      byType: await utils.getTransactionsByType()
+    };
+    res.json(trends);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch trends' });
+  }
+});
 
 app.listen(port, () => {
-  console.log(`Server running on http://localhost:${port}`);
+  console.log(`Server running at http://localhost:${port}`);
+  console.log(`View the dashboard at http://localhost:${port}`);
 });
 
 async function tst() {
