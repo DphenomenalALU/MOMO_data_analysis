@@ -42,4 +42,4 @@ async function tst() {
   }
 }
 
-tst()
+// tst()
