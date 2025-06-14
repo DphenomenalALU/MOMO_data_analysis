@@ -1,43 +1,96 @@
 class ApiService {
     constructor() {
-        this.baseUrl = 'http://localhost:3000/api'; // Will be updated for production
+        // Use environment variable or fallback to localhost
+        this.baseUrl = process.env.API_URL || 'http://localhost:3000/api';
     }
 
     async fetchTransactions(filters = {}) {
         try {
-            const queryParams = new URLSearchParams(filters).toString();
+            const {
+                page = 1,
+                limit = 10,
+                startDate,
+                endDate,
+                transactionType,
+                sortBy,
+                sortOrder
+            } = filters;
+
+            const queryParams = new URLSearchParams({
+                page,
+                limit,
+                ...(startDate && { startDate }),
+                ...(endDate && { endDate }),
+                ...(transactionType && { transactionType }),
+                ...(sortBy && { sortBy }),
+                ...(sortOrder && { sortOrder })
+            }).toString();
+
             const response = await fetch(`${this.baseUrl}/transactions?${queryParams}`);
-            if (!response.ok) throw new Error('Failed to fetch transactions');
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.message || 'Failed to fetch transactions');
+            }
             return await response.json();
         } catch (error) {
             console.error('Error fetching transactions:', error);
-            return [];
+            throw error;
         }
     }
 
-    async fetchTransactionStats() {
+    async fetchTransactionStats(filters = {}) {
         try {
-            const response = await fetch(`${this.baseUrl}/stats`);
-            if (!response.ok) throw new Error('Failed to fetch stats');
+            const { startDate, endDate, transactionType } = filters;
+            const queryParams = new URLSearchParams({
+                ...(startDate && { startDate }),
+                ...(endDate && { endDate }),
+                ...(transactionType && { transactionType })
+            }).toString();
+
+            const response = await fetch(`${this.baseUrl}/stats?${queryParams}`);
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.message || 'Failed to fetch stats');
+            }
             return await response.json();
         } catch (error) {
             console.error('Error fetching transaction stats:', error);
-            return {
-                totalTransactions: 0,
-                totalVolume: 0,
-                averageTransaction: 0
-            };
+            throw error;
         }
     }
 
-    async fetchMonthlyTrends() {
+    async fetchMonthlyTrends(filters = {}) {
         try {
-            const response = await fetch(`${this.baseUrl}/trends/monthly`);
-            if (!response.ok) throw new Error('Failed to fetch monthly trends');
+            const { year, transactionType } = filters;
+            const queryParams = new URLSearchParams({
+                ...(year && { year }),
+                ...(transactionType && { transactionType })
+            }).toString();
+
+            const response = await fetch(`${this.baseUrl}/trends/monthly?${queryParams}`);
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.message || 'Failed to fetch monthly trends');
+            }
             return await response.json();
         } catch (error) {
             console.error('Error fetching monthly trends:', error);
-            return [];
+            throw error;
+        }
+    }
+
+    async exportTransactions(filters = {}) {
+        try {
+            const queryParams = new URLSearchParams(filters).toString();
+            const response = await fetch(`${this.baseUrl}/transactions/export?${queryParams}`);
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.message || 'Failed to export transactions');
+            }
+            return await response.blob();
+        } catch (error) {
+            console.error('Error exporting transactions:', error);
+            throw error;
         }
     }
 }
