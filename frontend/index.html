@@ -10,71 +10,123 @@
 <body>
     <div class="container">
         <header>
-            <h1>MTN MoMo Transaction Dashboard</h1>
+            <h1><i class="fas fa-chart-line"></i> MTN MoMo Analysis Dashboard</h1>
             <div class="search-filter">
-                <input type="text" id="searchInput" placeholder="Search transactions...">
-                <select id="transactionType">
-                    <option value="all">All Transactions</option>
-                    <option value="incoming">Incoming Money</option>
-                    <option value="code">Payments to Code Holders</option>
-                    <option value="transfer">Transfers to Mobile Numbers</option>
-                    <option value="bank">Bank Deposits</option>
-                    <option value="airtime">Airtime Bill Payments</option>
-                    <option value="power">Cash Power Bill Payments</option>
-                    <option value="thirdParty">Third Party Transactions</option>
-                    <option value="withdrawal">Withdrawals from Agents</option>
-                    <option value="bankTransfer">Bank Transfers</option>
-                    <option value="bundle">Internet and Voice Bundles</option>
-                </select>
-                <input type="date" id="dateFilter">
+                <div class="search-group">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="Search transactions...">
+                </div>
+                <div class="filter-group">
+                    <select id="transactionType">
+                        <option value="all">All Transactions</option>
+                        <option value="incoming">Incoming Money</option>
+                        <option value="code">Payments to Code Holders</option>
+                        <option value="transfer">Transfers to Mobile Numbers</option>
+                        <option value="bank">Bank Deposits</option>
+                        <option value="airtime">Airtime Bill Payments</option>
+                        <option value="power">Cash Power Bill Payments</option>
+                        <option value="thirdParty">Third Party Transactions</option>
+                        <option value="withdrawal">Withdrawals from Agents</option>
+                        <option value="bankTransfer">Bank Transfers</option>
+                        <option value="bundle">Internet and Voice Bundles</option>
+                    </select>
+                </div>
+                <div class="date-group">
+                    <input type="date" id="dateFrom" placeholder="From Date">
+                    <input type="date" id="dateTo" placeholder="To Date">
+                </div>
+                <button id="exportBtn" class="btn-export">
+                    <i class="fas fa-download"></i> Export Data
+                </button>
             </div>
         </header>
 
         <main>
             <section class="summary-cards">
-                <div class="card">
+                <div class="card" data-tooltip="Total number of transactions processed">
                     <h3>Total Transactions</h3>
                     <p id="totalTransactions">0</p>
+                    <div class="trend up">+15% from last month</div>
                 </div>
-                <div class="card">
-                    <h3>Total Volume (RWF)</h3>
-                    <p id="totalVolume">0</p>
+                <div class="card" data-tooltip="Total transaction volume in RWF">
+                    <h3>Total Volume</h3>
+                    <p id="totalVolume">0 RWF</p>
+                    <div class="trend up">+8% from last month</div>
                 </div>
-                <div class="card">
-                    <h3>Average Transaction (RWF)</h3>
-                    <p id="averageTransaction">0</p>
+                <div class="card" data-tooltip="Average transaction amount">
+                    <h3>Average Transaction</h3>
+                    <p id="averageTransaction">0 RWF</p>
+                    <div class="trend down">-3% from last month</div>
                 </div>
             </section>
 
             <section class="charts">
                 <div class="chart-container">
-                    <h2>Transaction Distribution</h2>
+                    <h2><i class="fas fa-chart-pie"></i> Transaction Distribution</h2>
                     <canvas id="transactionPieChart"></canvas>
                 </div>
                 <div class="chart-container">
-                    <h2>Monthly Transaction Volume</h2>
+                    <h2><i class="fas fa-chart-bar"></i> Monthly Transaction Volume</h2>
                     <canvas id="monthlyBarChart"></canvas>
                 </div>
             </section>
 
             <section class="transactions">
-                <h2>Recent Transactions</h2>
+                <div class="section-header">
+                    <h2><i class="fas fa-list"></i> Recent Transactions</h2>
+                    <div class="table-controls">
+                        <div class="entries-select">
+                            <label>Show entries:</label>
+                            <select id="entriesPerPage">
+                                <option value="10">10</option>
+                                <option value="25">25</option>
+                                <option value="50">50</option>
+                                <option value="100">100</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
                 <div class="table-container">
                     <table id="transactionsTable">
                         <thead>
                             <tr>
-                                <th>Date</th>
-                                <th>Type</th>
-                                <th>Amount (RWF)</th>
+                                <th>Date <i class="fas fa-sort"></i></th>
+                                <th>Type <i class="fas fa-sort"></i></th>
+                                <th>Amount (RWF) <i class="fas fa-sort"></i></th>
+                                <th>Status</th>
                                 <th>Details</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody id="transactionsBody"></tbody>
                     </table>
+                    <div class="table-footer">
+                        <div class="table-info">Showing <span id="startEntry">1</span> to <span id="endEntry">10</span> of <span id="totalEntries">0</span> entries</div>
+                        <div class="pagination">
+                            <button id="prevPage" class="btn-page"><i class="fas fa-chevron-left"></i></button>
+                            <div id="pageNumbers"></div>
+                            <button id="nextPage" class="btn-page"><i class="fas fa-chevron-right"></i></button>
+                        </div>
+                    </div>
                 </div>
             </section>
         </main>
+
+        <!-- Transaction Details Modal -->
+        <div id="transactionModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Transaction Details</h3>
+                    <button class="close-modal"><i class="fas fa-times"></i></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Transaction details will be populated here -->
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-close">Close</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="js/api.js"></script>
