@@ -1,193 +1,137 @@
 import express from 'express';
 import cors from 'cors';
 import pg from 'pg';
-import dotenv from 'dotenv';
-
-dotenv.config();
-
 const { Pool } = pg;
+
+const router = express.Router();
+
+// Database connection
 const pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
-    ssl: {
-        rejectUnauthorized: false
-    }
+  connectionString: 'postgresql://mtn-momo-analysis%20_owner:npg_bYvWy0SNG6rC@ep-orange-moon-a9a9cbk5-pooler.gwc.azure.neon.tech/mtn-momo-analysis%20?sslmode=require'
 });
 
-const app = express();
-app.use(cors());
-app.use(express.json());
+// Get all transactions with optional filtering
+router.get('/transactions', async (req, res) => {
+  try {
+    const { 
+      type, 
+      startDate, 
+      endDate, 
+      minAmount, 
+      maxAmount,
+      page = 1,
+      limit = 50,
+      sortBy = 'date',
+      sortOrder = 'DESC'
+    } = req.query;
 
-// Get all transactions with pagination and filtering
-app.get('/api/transactions', async (req, res) => {
-    try {
-        const {
-            page = 1,
-            limit = 10,
-            type,
-            dateFrom,
-            dateTo,
-            minAmount,
-            maxAmount,
-            search
-        } = req.query;
+    let query = 'SELECT * FROM transactions WHERE 1=1';
+    const values = [];
+    let paramCount = 1;
 
-        const offset = (page - 1) * limit;
-        const params = [];
-        let whereClause = [];
-        let paramCount = 1;
-
-        if (type) {
-            whereClause.push(`type = $${paramCount}`);
-            params.push(type);
-            paramCount++;
-        }
-
-        if (dateFrom) {
-            whereClause.push(`date >= $${paramCount}`);
-            params.push(dateFrom);
-            paramCount++;
-        }
-
-        if (dateTo) {
-            whereClause.push(`date <= $${paramCount}`);
-            params.push(dateTo);
-            paramCount++;
-        }
-
-        if (minAmount) {
-            whereClause.push(`amount >= $${paramCount}`);
-            params.push(minAmount);
-            paramCount++;
-        }
-
-        if (maxAmount) {
-            whereClause.push(`amount <= $${paramCount}`);
-            params.push(maxAmount);
-            paramCount++;
-        }
-
-        if (search) {
-            whereClause.push(`(
-                counterparty_number ILIKE $${paramCount} OR 
-                counterparty_name ILIKE $${paramCount} OR 
-                transaction_id ILIKE $${paramCount}
-            )`);
-            params.push(`%${search}%`);
-            paramCount++;
-        }
-
-        const whereStatement = whereClause.length > 0 
-            ? 'WHERE ' + whereClause.join(' AND ')
-            : '';
-
-        const query = `
-            SELECT * FROM transactions 
-            ${whereStatement}
-            ORDER BY date DESC 
-            LIMIT $${paramCount} 
-            OFFSET $${paramCount + 1}
-        `;
-        
-        params.push(limit, offset);
-
-        const countQuery = `
-            SELECT COUNT(*) 
-            FROM transactions 
-            ${whereStatement}
-        `;
-
-        const [data, count] = await Promise.all([
-            pool.query(query, params),
-            pool.query(countQuery, params.slice(0, -2))
-        ]);
-
-        res.json({
-            data: data.rows,
-            total: parseInt(count.rows[0].count),
-            page: parseInt(page),
-            totalPages: Math.ceil(parseInt(count.rows[0].count) / limit)
-        });
-    } catch (error) {
-        console.error('Error fetching transactions:', error);
-        res.status(500).json({ error: 'Internal server error' });
+    if (type) {
+      query += ` AND type = $${paramCount}`;
+      values.push(type);
+      paramCount++;
     }
+
+    if (startDate) {
+      query += ` AND date >= $${paramCount}`;
+      values.push(startDate);
+      paramCount++;
+    }
+
+    if (endDate) {
+      query += ` AND date <= $${paramCount}`;
+      values.push(endDate);
+      paramCount++;
+    }
+
+    if (minAmount) {
+      query += ` AND amount >= $${paramCount}`;
+      values.push(minAmount);
+      paramCount++;
+    }
+
+    if (maxAmount) {
+      query += ` AND amount <= $${paramCount}`;
+      values.push(maxAmount);
+      paramCount++;
+    }
+
+    // Add sorting
+    query += ` ORDER BY ${sortBy} ${sortOrder}`;
+
+    // Add pagination
+    const offset = (page - 1) * limit;
+    query += ` LIMIT $${paramCount} OFFSET $${paramCount + 1}`;
+    values.push(limit, offset);
+
+    const result = await pool.query(query, values);
+    
+    // Get total count for pagination
+    const countQuery = `SELECT COUNT(*) FROM transactions WHERE 1=1${query.split('ORDER BY')[0].split('WHERE')[1]}`;
+    const countResult = await pool.query(countQuery, values.slice(0, -2));
+    
+    res.json({
+      data: result.rows,
+      pagination: {
+        total: parseInt(countResult.rows[0].count),
+        page: parseInt(page),
+        limit: parseInt(limit),
+        totalPages: Math.ceil(parseInt(countResult.rows[0].count) / limit)
+      }
+    });
+  } catch (error) {
+    console.error('Error fetching transactions:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
 });
 
 // Get transaction statistics
-app.get('/api/stats', async (req, res) => {
-    try {
-        const stats = await pool.query('SELECT * FROM transaction_stats');
-        res.json(stats.rows);
-    } catch (error) {
-        console.error('Error fetching statistics:', error);
-        res.status(500).json({ error: 'Internal server error' });
-    }
-});
-
-// Get monthly summaries
-app.get('/api/monthly-summary', async (req, res) => {
-    try {
-        const summaries = await pool.query(`
-            SELECT * FROM monthly_summaries 
-            ORDER BY month DESC, type
-        `);
-        res.json(summaries.rows);
-    } catch (error) {
-        console.error('Error fetching monthly summaries:', error);
-        res.status(500).json({ error: 'Internal server error' });
-    }
+router.get('/statistics', async (req, res) => {
+  try {
+    const stats = await pool.query('SELECT * FROM transaction_stats');
+    const monthly = await pool.query('SELECT * FROM monthly_summaries');
+    
+    res.json({
+      overall: stats.rows,
+      monthly: monthly.rows
+    });
+  } catch (error) {
+    console.error('Error fetching statistics:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
 });
 
 // Get transaction details by ID
-app.get('/api/transactions/:id', async (req, res) => {
-    try {
-        const { id } = req.params;
-        const result = await pool.query(
-            'SELECT * FROM transactions WHERE id = $1',
-            [id]
-        );
-
-        if (result.rows.length === 0) {
-            return res.status(404).json({ error: 'Transaction not found' });
-        }
-
-        res.json(result.rows[0]);
-    } catch (error) {
-        console.error('Error fetching transaction details:', error);
-        res.status(500).json({ error: 'Internal server error' });
+router.get('/transactions/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await pool.query('SELECT * FROM transactions WHERE id = $1', [id]);
+    
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Transaction not found' });
     }
+    
+    res.json(result.rows[0]);
+  } catch (error) {
+    console.error('Error fetching transaction details:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
 });
 
-// Get transaction distribution
-app.get('/api/distribution', async (req, res) => {
-    try {
-        const result = await pool.query(`
-            WITH ranges AS (
-                SELECT 
-                    CASE 
-                        WHEN amount < 1000 THEN '0-999'
-                        WHEN amount < 5000 THEN '1000-4999'
-                        WHEN amount < 10000 THEN '5000-9999'
-                        WHEN amount < 50000 THEN '10000-49999'
-                        ELSE '50000+'
-                    END as range,
-                    COUNT(*) as count
-                FROM transactions
-                GROUP BY 1
-            )
-            SELECT * FROM ranges
-            ORDER BY range;
-        `);
-        res.json(result.rows);
-    } catch (error) {
-        console.error('Error fetching distribution:', error);
-        res.status(500).json({ error: 'Internal server error' });
-    }
+// Get transaction types
+router.get('/transaction-types', async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT enum_range(NULL::transaction_type)::text[] as types
+    `);
+    res.json(result.rows[0].types);
+  } catch (error) {
+    console.error('Error fetching transaction types:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`API server running on port ${PORT}`);
-});
-
-export default app; 
+export default router; 
