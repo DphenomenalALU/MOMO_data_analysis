@@ -4,6 +4,10 @@ class App {
         this.transactionManager = new TransactionManager();
         this.filters = {};
         
+        // Define data range constants
+        this.MIN_DATE = '2024-05-10';
+        this.MAX_DATE = '2025-01-16';
+        
         this.initializeApp();
     }
 
@@ -15,6 +19,16 @@ class App {
 
     async setupFilters() {
         try {
+            // Set up date range limits
+            const dateFromInput = document.getElementById('dateFrom');
+            const dateToInput = document.getElementById('dateTo');
+            
+            // Set min and max dates for both inputs
+            dateFromInput.min = this.MIN_DATE;
+            dateFromInput.max = this.MAX_DATE;
+            dateToInput.min = this.MIN_DATE;
+            dateToInput.max = this.MAX_DATE;
+            
             // Load transaction types for filter dropdown
             const types = await api.getTransactionTypes();
             const typeSelect = document.getElementById('transactionType');
@@ -62,6 +76,24 @@ class App {
             element.addEventListener('change', () => {
                 this.updateFilters();
             });
+        });
+
+        // Add date validation
+        const dateFromInput = document.getElementById('dateFrom');
+        const dateToInput = document.getElementById('dateTo');
+
+        dateFromInput.addEventListener('change', () => {
+            // Ensure 'to' date is not before 'from' date
+            if (dateFromInput.value && dateToInput.value && dateFromInput.value > dateToInput.value) {
+                dateToInput.value = dateFromInput.value;
+            }
+        });
+
+        dateToInput.addEventListener('change', () => {
+            // Ensure 'from' date is not after 'to' date
+            if (dateFromInput.value && dateToInput.value && dateToInput.value < dateFromInput.value) {
+                dateFromInput.value = dateToInput.value;
+            }
         });
     }
 

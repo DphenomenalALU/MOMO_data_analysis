@@ -202,18 +202,3 @@ app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
   console.log(`View the dashboard at http://localhost:${port}`);
 });
-
-async function tst() {
-
-  try {
-    const recieved = await db.query(
-      "SELECT * FROM sms_info WHERE body LIKE '%' || 'You have received' || '%';",
-    )
-    console.log(recieved.rows);
-    
-  } catch (error) {
-    console.log('error finding data: ', error)
-  }
-}
-
-// tst()

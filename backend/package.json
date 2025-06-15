@@ -6,10 +6,10 @@
   "main": "server.mjs",
   "scripts": {
     "start": "node server.mjs",
-    "setup-db": "node src/setupDb.mjs",
-    "import-data": "node src/importData.mjs",
-    "verify-data": "node src/verifyData.mjs",
-    "test-db": "node src/testDb.mjs"
+    "setup-db": "node utils/setupDb.mjs",
+    "import-data": "node utils/importData.mjs",
+    "verify-data": "node utils/verifyData.mjs",
+    "test-db": "node utils/testDb.mjs"
   },
   "dependencies": {
     "cors": "^2.8.5",

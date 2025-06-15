@@ -1,11 +1,13 @@
 /* Base styles */
 :root {
-    --primary-color: #007bff;
-    --secondary-color: #6c757d;
-    --success-color: #28a745;
+    --primary-color: #004f71;    /* MTN MoMo Blue */
+    --secondary-color: #ffcc00;  /* MTN MoMo Yellow */
+    --text-color: #333333;
     --background-color: #f8f9fa;
-    --border-color: #dee2e6;
-    --text-color: #212529;
+    --border-color: #e0e0e0;
+    --hover-color: #003854;      /* Darker shade of MTN blue for hover */
+    --light-yellow: #fff3cc;     /* Lighter shade of MTN yellow for backgrounds */
+    --light-blue: #e6f3f7;       /* Lighter shade of MTN blue for backgrounds */
 }
 
 * {
@@ -30,11 +32,16 @@ body {
 /* Header */
 header {
     margin-bottom: 30px;
+    background-color: var(--primary-color);
+    padding: 20px;
+    border-radius: 8px;
+    color: white;
 }
 
 h1 {
-    color: var(--primary-color);
+    color: var(--secondary-color);
     margin-bottom: 20px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .summary-stats {
@@ -49,12 +56,14 @@ h1 {
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-top: 3px solid var(--secondary-color);
 }
 
 .stat-card h3 {
-    color: var(--secondary-color);
+    color: var(--primary-color);
     font-size: 0.9em;
     margin-bottom: 10px;
+    text-transform: uppercase;
 }
 
 .stat-card p {
@@ -70,6 +79,7 @@ h1 {
     border-radius: 8px;
     margin-bottom: 30px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-left: 4px solid var(--secondary-color);
 }
 
 .filter-form {
@@ -87,7 +97,8 @@ h1 {
 label {
     margin-bottom: 8px;
     font-size: 0.9em;
-    color: var(--secondary-color);
+    color: var(--primary-color);
+    font-weight: 500;
 }
 
 input, select {
@@ -95,6 +106,12 @@ input, select {
     border: 1px solid var(--border-color);
     border-radius: 4px;
     font-size: 1em;
+}
+
+input:focus, select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px var(--light-blue);
 }
 
 button {
@@ -105,10 +122,11 @@ button {
     border-radius: 4px;
     cursor: pointer;
     transition: background-color 0.3s;
+    font-weight: 500;
 }
 
 button:hover {
-    background-color: #0056b3;
+    background-color: var(--hover-color);
 }
 
 /* Charts */
@@ -124,6 +142,13 @@ button:hover {
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-top: 3px solid var(--primary-color);
+}
+
+.chart-section h2 {
+    color: var(--primary-color);
+    margin-bottom: 20px;
+    font-size: 1.2em;
 }
 
 /* Transactions List */
@@ -132,6 +157,13 @@ button:hover {
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-top: 3px solid var(--primary-color);
+}
+
+.transactions h2 {
+    color: var(--primary-color);
+    margin-bottom: 20px;
+    font-size: 1.2em;
 }
 
 .transaction-item {
@@ -144,17 +176,19 @@ button:hover {
 }
 
 .transaction-item:not(.header):hover {
-    background-color: #f8f9fa;
+    background-color: var(--light-blue);
 }
 
 .transaction-item.header {
     font-weight: bold;
-    background-color: #f8f9fa;
-    border-bottom: 2px solid var(--border-color);
+    background-color: var(--primary-color);
+    color: white;
+    border-bottom: 2px solid var(--secondary-color);
     cursor: default;
     position: sticky;
     top: 0;
     z-index: 1;
+    border-radius: 4px 4px 0 0;
 }
 
 .transaction-item:last-child {
@@ -166,6 +200,13 @@ button:hover {
     padding: 20px;
 }
 
+.transaction-detail h3 {
+    color: var(--primary-color);
+    margin-bottom: 20px;
+    border-bottom: 2px solid var(--secondary-color);
+    padding-bottom: 10px;
+}
+
 .detail-row {
     display: grid;
     grid-template-columns: 120px 1fr;
@@ -175,7 +216,7 @@ button:hover {
 
 .detail-row .label {
     font-weight: bold;
-    color: var(--secondary-color);
+    color: var(--primary-color);
 }
 
 .detail-row .value {
@@ -190,7 +231,7 @@ button:hover {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 79, 113, 0.5); /* Using primary color with opacity */
     z-index: 1000;
 }
 
@@ -202,6 +243,7 @@ button:hover {
     width: 80%;
     max-width: 600px;
     position: relative;
+    border-top: 4px solid var(--secondary-color);
 }
 
 .close {
@@ -210,11 +252,21 @@ button:hover {
     top: 10px;
     font-size: 28px;
     cursor: pointer;
-    color: var(--secondary-color);
+    color: var(--primary-color);
 }
 
 .close:hover {
-    color: var(--text-color);
+    color: var(--hover-color);
+}
+
+/* No Data State */
+.no-data {
+    text-align: center;
+    padding: 40px;
+    color: var(--primary-color);
+    background-color: var(--light-blue);
+    border-radius: 4px;
+    margin: 20px 0;
 }
 
 /* Responsive adjustments */
