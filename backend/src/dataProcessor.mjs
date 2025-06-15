@@ -4,10 +4,14 @@ import { fileURLToPath } from 'url';
 import xml2js from 'xml2js';
 import winston from 'winston';
 import pg from 'pg';
+import dotenv from 'dotenv';
 const { Pool } = pg;
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+// Load environment variables
+dotenv.config({ path: path.join(__dirname, '..', '.env') });
 
 // Configure logging
 const logger = winston.createLogger({
@@ -348,4 +352,4 @@ class DataProcessor {
   }
 }
 
-export default DataProcessor; 
+export { DataProcessor }; 

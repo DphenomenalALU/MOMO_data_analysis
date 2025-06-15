@@ -1,24 +1,24 @@
-import express from 'express';
-import cors from 'cors';
-import apiRouter from './api.mjs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import DataProcessor from './dataProcessor.mjs';
 
-const app = express();
-const PORT = process.env.PORT || 3000;
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-// Middleware
-app.use(cors());
-app.use(express.json());
+async function main() {
+  try {
+    const processor = new DataProcessor();
+    const xmlFile = path.join(__dirname, '../../backend/modified_sms_v2.xml');
+    
+    console.log('Starting SMS processing...');
+    const stats = await processor.processXMLFile(xmlFile);
+    console.log('Processing complete:', stats);
+    
+    process.exit(0);
+  } catch (error) {
+    console.error('Error:', error);
+    process.exit(1);
+  }
+}
 
-// API routes
-app.use('/api', apiRouter);
-
-// Error handling middleware
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ error: 'Something broke!' });
-});
-
-// Start server
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-}); 
+main(); 
