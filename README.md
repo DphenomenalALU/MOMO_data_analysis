@@ -1,4 +1,4 @@
-# MTN MOMO Transaction Analysis
+# MTN MOMO Transaction Analysis Dashboard
 
 A web application for analyzing MTN Mobile Money (MOMO) transactions. Built with Express.js backend and vanilla JavaScript frontend.
 
