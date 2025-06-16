@@ -25,20 +25,36 @@ const TRANSACTION_TYPES = {
 };
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 env.config();
 
+// Parse allowed origins from environment variable
+const getAllowedOrigins = () => {
+  if (process.env.NODE_ENV === 'production') {
+    return process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : ['*'];
+  }
+  return ['http://localhost:3000'];
+};
+
 // Middleware
-app.use(cors());
+app.use(cors({
+    origin: getAllowedOrigins(),
+    credentials: true
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Serve static files from frontend directory
-app.use(express.static(path.join(__dirname, '../frontend')));
+// Serve static files from frontend directory in development
+if (process.env.NODE_ENV !== 'production') {
+    app.use(express.static(path.join(__dirname, '../frontend')));
+}
 
-//Create pg instance using DATABASE_URL
+//Create pg instance using DATABASE_URL with SSL for production
 const db = new pg.Client({
-    connectionString: process.env.DATABASE_URL
+    connectionString: process.env.DATABASE_URL,
+    ssl: process.env.NODE_ENV === 'production' ? {
+        rejectUnauthorized: false
+    } : false
 });
 
 db.connect()
