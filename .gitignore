@@ -36,8 +36,6 @@ out/
 Thumbs.db
 
 # Application specific
-backend/data/
-backend/logs/
 *.log
 processing-stats.json
 
