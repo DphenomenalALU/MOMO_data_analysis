@@ -7,7 +7,7 @@ A web application for analyzing MTN Mobile Money (MOMO) transactions. Built with
 - Transaction filtering by type, date range, and amount
 - Interactive charts showing monthly trends and transaction type distribution
 - Detailed transaction view with counterparty information
-- PDF export functionality
+- PDF export functionality for every reports
 - Responsive design with MTN MoMo brand colors
 - Real-time data updates
 
