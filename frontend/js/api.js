@@ -1,99 +1,50 @@
-class ApiService {
-    constructor() {
-        // Use environment variable or fallback to localhost
-        this.baseUrl = process.env.API_URL || 'http://localhost:3000/api';
-    }
+const API_BASE_URL = 'http://localhost:3000/api';
 
-    async fetchTransactions(filters = {}) {
-        try {
-            const {
-                page = 1,
-                limit = 10,
-                startDate,
-                endDate,
-                transactionType,
-                sortBy,
-                sortOrder
-            } = filters;
-
-            const queryParams = new URLSearchParams({
-                page,
-                limit,
-                ...(startDate && { startDate }),
-                ...(endDate && { endDate }),
-                ...(transactionType && { transactionType }),
-                ...(sortBy && { sortBy }),
-                ...(sortOrder && { sortOrder })
-            }).toString();
-
-            const response = await fetch(`${this.baseUrl}/transactions?${queryParams}`);
-            if (!response.ok) {
-                const error = await response.json();
-                throw new Error(error.message || 'Failed to fetch transactions');
-            }
-            return await response.json();
-        } catch (error) {
-            console.error('Error fetching transactions:', error);
-            throw error;
+const api = {
+    // Get filtered transactions
+    async getTransactions(filters = {}) {
+        const queryParams = new URLSearchParams();
+        
+        // Only add type filter if a specific type is selected
+        if (filters.type && filters.type !== '') {
+            queryParams.append('type', filters.type);
         }
+        
+        if (filters.date_from) queryParams.append('date_from', filters.date_from);
+        if (filters.date_to) queryParams.append('date_to', filters.date_to);
+        if (filters.min_amount) queryParams.append('min_amount', filters.min_amount);
+        if (filters.max_amount) queryParams.append('max_amount', filters.max_amount);
+
+        const response = await fetch(`${API_BASE_URL}/transactions?${queryParams}`);
+        if (!response.ok) throw new Error('Failed to fetch transactions');
+        return response.json();
+    },
+
+    // Get single transaction details
+    async getTransactionDetails(id) {
+        const response = await fetch(`${API_BASE_URL}/transactions/${id}`);
+        if (!response.ok) throw new Error('Failed to fetch transaction details');
+        return response.json();
+    },
+
+    // Get summary statistics
+    async getSummaryStats() {
+        const response = await fetch(`${API_BASE_URL}/stats/summary`);
+        if (!response.ok) throw new Error('Failed to fetch summary statistics');
+        return response.json();
+    },
+
+    // Get monthly statistics
+    async getMonthlyStats() {
+        const response = await fetch(`${API_BASE_URL}/stats/monthly`);
+        if (!response.ok) throw new Error('Failed to fetch monthly statistics');
+        return response.json();
+    },
+
+    // Get transaction types
+    async getTransactionTypes() {
+        const response = await fetch(`${API_BASE_URL}/transactions/types`);
+        if (!response.ok) throw new Error('Failed to fetch transaction types');
+        return response.json();
     }
-
-    async fetchTransactionStats(filters = {}) {
-        try {
-            const { startDate, endDate, transactionType } = filters;
-            const queryParams = new URLSearchParams({
-                ...(startDate && { startDate }),
-                ...(endDate && { endDate }),
-                ...(transactionType && { transactionType })
-            }).toString();
-
-            const response = await fetch(`${this.baseUrl}/stats?${queryParams}`);
-            if (!response.ok) {
-                const error = await response.json();
-                throw new Error(error.message || 'Failed to fetch stats');
-            }
-            return await response.json();
-        } catch (error) {
-            console.error('Error fetching transaction stats:', error);
-            throw error;
-        }
-    }
-
-    async fetchMonthlyTrends(filters = {}) {
-        try {
-            const { year, transactionType } = filters;
-            const queryParams = new URLSearchParams({
-                ...(year && { year }),
-                ...(transactionType && { transactionType })
-            }).toString();
-
-            const response = await fetch(`${this.baseUrl}/trends/monthly?${queryParams}`);
-            if (!response.ok) {
-                const error = await response.json();
-                throw new Error(error.message || 'Failed to fetch monthly trends');
-            }
-            return await response.json();
-        } catch (error) {
-            console.error('Error fetching monthly trends:', error);
-            throw error;
-        }
-    }
-
-    async exportTransactions(filters = {}) {
-        try {
-            const queryParams = new URLSearchParams(filters).toString();
-            const response = await fetch(`${this.baseUrl}/transactions/export?${queryParams}`);
-            if (!response.ok) {
-                const error = await response.json();
-                throw new Error(error.message || 'Failed to export transactions');
-            }
-            return await response.blob();
-        } catch (error) {
-            console.error('Error exporting transactions:', error);
-            throw error;
-        }
-    }
-}
-
-const api = new ApiService();
-export default api; 
+}; 

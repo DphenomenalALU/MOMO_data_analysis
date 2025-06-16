@@ -4,10 +4,14 @@ import { fileURLToPath } from 'url';
 import xml2js from 'xml2js';
 import winston from 'winston';
 import pg from 'pg';
+import dotenv from 'dotenv';
 const { Pool } = pg;
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+// Load environment variables
+dotenv.config({ path: path.join(__dirname, '..', '.env') });
 
 // Configure logging
 const logger = winston.createLogger({
@@ -339,13 +343,19 @@ class DataProcessor {
 
     } catch (error) {
       logger.error({
-        message: 'Error saving to database',
+        message: 'Error processing message',
         timestamp: new Date().toISOString(),
-        error: error.message
+        error: error.message,
+        transaction: {
+          body: sms.body,
+          address: sms.address,
+          protocol: sms.protocol,
+          service_center: sms.service_center
+        }
       });
       return false;
     }
   }
 }
 
-export default DataProcessor; 
+export { DataProcessor }; 
