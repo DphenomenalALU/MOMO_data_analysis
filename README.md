@@ -102,12 +102,19 @@ You can either use a local PostgreSQL database or set up a free cloud database w
    ```
    Replace 'your-database-connection-string' with either your Neon.tech connection string or local PostgreSQL connection string.
 
-4. Import initial data:
+4. Set Up Schema : manually using Schema.sql or run the script
+
+ ```
+   cd backend/utils
+   node setupDp.mjs 
+ ```   
+
+6. Import initial data:
    ```bash
    npm run import-data
    ```
 
-5. Verify data import:
+7. Verify data import:
    ```bash
    npm run verify-data
    ```
