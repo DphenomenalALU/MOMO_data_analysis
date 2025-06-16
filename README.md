@@ -1,67 +1,137 @@
-# MTN MoMo Transaction Analysis Dashboard
+# MTN MOMO Analysis Dashboard
 
-## Environment Setup
+A full-stack web application for analyzing MTN Mobile Money transactions, built with Express.js backend and vanilla JavaScript frontend.
 
-1. Create a `.env` file in the root directory with the following content:
+## Project Structure
+
 ```
-# API Configuration
-API_URL=http://localhost:3000/api
-
-# Environment
-NODE_ENV=development
+├── backend/
+│   ├── server.mjs          # Main Express server
+│   ├── schema.sql          # Database schema
+│   ├── utils/              # Utility scripts
+│   │   ├── setupDb.mjs     # Database setup
+│   │   ├── importData.mjs  # Data import
+│   │   ├── verifyData.mjs  # Data verification
+│   │   └── testDb.mjs      # Database testing
+│   └── package.json        # Backend dependencies
+└── frontend/
+    ├── index.html          # Main HTML
+    ├── css/
+    │   └── styles.css      # Styles with MTN MoMo theme
+    └── js/
+        ├── app.js          # Main application logic
+        ├── api.js          # API integration
+        ├── charts.js       # Chart.js visualizations
+        └── transactions.js # Transaction management
 ```
 
-2. Update the `API_URL` to match your backend server URL
-3. Set `NODE_ENV` to 'production' for production deployment
+## Setup Instructions
 
-## API Integration
+### 1. Database Setup
 
-The dashboard integrates with the following API endpoints:
+1. Create a free PostgreSQL database on [Neon.tech](https://neon.tech):
+   - Sign up for a Neon account
+   - Create a new project
+   - Create a new database named `momo-analysis`
+   - Get your database connection string from the dashboard
 
-- `GET /api/transactions` - Fetch transactions with filtering and pagination
-- `GET /api/stats` - Get transaction statistics
-- `GET /api/trends/monthly` - Get monthly transaction trends
-- `GET /api/transactions/export` - Export transactions to CSV
+2. Note your connection string, it will look similar to:
+   ```
+   postgresql://user:password@ep-xxxxx-pooler.region.aws.neon.tech/dbname?sslmode=require
+   ```
 
-### API Parameters
+### 2. Backend Setup
 
-#### Transactions Endpoint
-- `page` - Page number (default: 1)
-- `limit` - Items per page (default: 10)
-- `startDate` - Start date filter (ISO format)
-- `endDate` - End date filter (ISO format)
-- `transactionType` - Filter by transaction type
-- `sortBy` - Sort field (default: 'date')
-- `sortOrder` - Sort order ('asc' or 'desc')
+1. Navigate to the backend directory:
+   ```bash
+   cd backend
+   ```
 
-#### Stats Endpoint
-- `startDate` - Start date filter
-- `endDate` - End date filter
-- `transactionType` - Filter by transaction type
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
 
-#### Monthly Trends Endpoint
-- `year` - Filter by year
-- `transactionType` - Filter by transaction type
+3. Create a `.env` file in the backend directory with the following content:
+   ```
+   # Database Configuration
+   DATABASE_URL='your-neon-database-connection-string'
 
-## Features
+   # Node Environment
+   NODE_ENV=development
+   ```
+   Replace 'your-neon-database-connection-string' with your actual Neon.tech connection string.
 
-- Real-time data updates
-- Advanced filtering options
-- Pagination support
-- CSV export functionality
-- Error handling and loading states
-- Responsive design
-- Interactive charts with Chart.js
+4. Set up the database schema:
+   ```bash
+   npm run setup-db
+   ```
+
+5. Import initial data:
+   ```bash
+   npm run import-data
+   ```
+
+6. Verify data import:
+   ```bash
+   npm run verify-data
+   ```
+
+### 3. Start the Application
+
+1. Start the backend server:
+   ```bash
+   cd backend
+   npm start
+   ```
+
+2. Access the application:
+   - Open `http://localhost:3000` in your browser
+   - The frontend will be served automatically by the backend
+
+## API Endpoints
+
+- `GET /api/transactions` - List transactions with filters
+  - Query params: type, date_from, date_to, min_amount, max_amount
+
+- `GET /api/transactions/:id` - Get transaction details
+
+- `GET /api/stats/summary` - Get transaction statistics
+  - Returns: total_transactions, total_volume, avg_amount, min_amount, max_amount
+
+- `GET /api/stats/monthly` - Get monthly statistics
+  - Returns: transaction_count, total_amount, avg_amount by month
+
+- `GET /api/transactions/types` - Get available transaction types
+
+## Data Range
+
+The application contains transaction data from May 10, 2024, to January 16, 2025. The date filters in the UI are automatically restricted to this range.
+
+## Transaction Types
+
+- INCOMING_MONEY
+- PAYMENT_TO_CODE
+- TRANSFER_TO_MOBILE
+- BANK_DEPOSIT
+- AIRTIME_PAYMENT
+- CASH_POWER
+- THIRD_PARTY
+- WITHDRAWAL
+- BANK_TRANSFER
+- INTERNET_BUNDLE
+
+## Styling
+
+The application uses MTN MoMo's brand colors:
+- Primary Blue: #004f71
+- Secondary Yellow: #ffcc00
 
 ## Development
 
-1. Clone the repository
-2. Set up environment variables
-3. Install dependencies
-4. Start the development server
-
-## Production Deployment
-
-1. Update `.env` with production API URL
-2. Set NODE_ENV to 'production'
-3. Build and deploy to any hosting platform
+To run tests or utility scripts:
+```bash
+cd backend
+npm run test-db        # Test database connection
+npm run verify-data    # Verify data integrity
+```

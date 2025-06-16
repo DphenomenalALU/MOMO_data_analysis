@@ -23,6 +23,16 @@
                     <label for="transactionType">Transaction Type:</label>
                     <select id="transactionType">
                         <option value="">All Types</option>
+                        <option value="INCOMING_MONEY">Incoming Money</option>
+                        <option value="PAYMENT_TO_CODE">Payments to Code Holders</option>
+                        <option value="TRANSFER_TO_MOBILE">Transfers to Mobile Numbers</option>
+                        <option value="BANK_DEPOSIT">Bank Deposits</option>
+                        <option value="AIRTIME_PAYMENT">Airtime Bill Payments</option>
+                        <option value="CASH_POWER">Cash Power Bill Payments</option>
+                        <option value="THIRD_PARTY">Transactions Initiated by Third Parties</option>
+                        <option value="WITHDRAWAL">Withdrawals from Agents</option>
+                        <option value="BANK_TRANSFER">Bank Transfers</option>
+                        <option value="INTERNET_BUNDLE">Internet and Voice Bundle Purchases</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -41,7 +51,10 @@
                     <label for="maxAmount">Max Amount:</label>
                     <input type="number" id="maxAmount" min="0">
                 </div>
-                <button id="applyFilters">Apply Filters</button>
+                <div class="filter-buttons">
+                    <button id="applyFilters">Apply Filters</button>
+                    <button id="exportPDF" class="secondary">Export as PDF</button>
+                </div>
             </div>
         </section>
 

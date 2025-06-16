@@ -129,6 +129,20 @@ button:hover {
     background-color: var(--hover-color);
 }
 
+.filter-buttons {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+button.secondary {
+    background-color: var(--secondary-color);
+}
+
+button.secondary:hover {
+    background-color: var(--hover-color);
+}
+
 /* Charts */
 .charts-container {
     display: grid;
@@ -291,5 +305,57 @@ button:hover {
     .detail-row {
         grid-template-columns: 1fr;
         gap: 5px;
+    }
+}
+
+/* Print styles */
+@media print {
+    body {
+        padding: 20px;
+        font-size: 12pt;
+    }
+
+    .filters,
+    .modal,
+    .close,
+    button {
+        display: none !important;
+    }
+
+    .container {
+        width: 100%;
+        margin: 0;
+        padding: 0;
+    }
+
+    .chart-section {
+        page-break-inside: avoid;
+        break-inside: avoid;
+        margin-bottom: 20px;
+    }
+
+    .transactions {
+        page-break-inside: avoid;
+        break-inside: avoid;
+    }
+
+    .transaction-item {
+        border-bottom: 1px solid #ccc;
+        padding: 8px 0;
+    }
+
+    .transaction-item.header {
+        background-color: #f0f0f0 !important;
+        color: black !important;
+        font-weight: bold;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    /* Ensure white background and black text for better printing */
+    * {
+        background-color: white !important;
+        color: black !important;
+        box-shadow: none !important;
     }
 } 

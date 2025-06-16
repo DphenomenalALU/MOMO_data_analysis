@@ -33,10 +33,14 @@ class App {
             const types = await api.getTransactionTypes();
             const typeSelect = document.getElementById('transactionType');
             
+            // Clear existing options except the "All Types" option
+            typeSelect.innerHTML = '<option value="">All Types</option>';
+            
+            // Add transaction types to dropdown
             types.forEach(type => {
                 const option = document.createElement('option');
-                option.value = type;
-                option.textContent = type;
+                option.value = type.id;
+                option.textContent = type.name;
                 typeSelect.appendChild(option);
             });
         } catch (error) {
@@ -68,6 +72,9 @@ class App {
     setupEventListeners() {
         const applyFiltersBtn = document.getElementById('applyFilters');
         applyFiltersBtn.addEventListener('click', () => this.applyFilters());
+
+        const exportPDFBtn = document.getElementById('exportPDF');
+        exportPDFBtn.addEventListener('click', () => this.exportToPDF());
 
         // Add input event listeners for filter fields
         const filterFields = ['transactionType', 'dateFrom', 'dateTo', 'minAmount', 'maxAmount'];
@@ -116,6 +123,42 @@ class App {
         } catch (error) {
             console.error('Error applying filters:', error);
             alert('Failed to apply filters');
+        }
+    }
+
+    async exportToPDF() {
+        try {
+            // Create a timestamp for the filename
+            const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+            
+            // Add export info to the page
+            const exportInfo = document.createElement('div');
+            exportInfo.className = 'export-info';
+            exportInfo.innerHTML = `
+                <div style="margin-bottom: 20px;">
+                    <h2>MOMO Transaction Report</h2>
+                    <p>Generated: ${new Date().toLocaleString()}</p>
+                    <p>Filters Applied:</p>
+                    <ul>
+                        <li>Transaction Type: ${document.getElementById('transactionType').options[document.getElementById('transactionType').selectedIndex].text}</li>
+                        <li>Date Range: ${document.getElementById('dateFrom').value || 'Any'} to ${document.getElementById('dateTo').value || 'Any'}</li>
+                        <li>Amount Range: ${document.getElementById('minAmount').value || 'Any'} to ${document.getElementById('maxAmount').value || 'Any'}</li>
+                    </ul>
+                </div>
+            `;
+            
+            // Insert export info at the top of the container
+            const container = document.querySelector('.container');
+            container.insertBefore(exportInfo, container.firstChild);
+
+            // Print the page which will allow saving as PDF
+            window.print();
+
+            // Remove the export info after printing
+            container.removeChild(exportInfo);
+        } catch (error) {
+            console.error('Error exporting to PDF:', error);
+            alert('Failed to export to PDF');
         }
     }
 }

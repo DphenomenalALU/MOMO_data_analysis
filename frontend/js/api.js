@@ -4,7 +4,12 @@ const api = {
     // Get filtered transactions
     async getTransactions(filters = {}) {
         const queryParams = new URLSearchParams();
-        if (filters.type) queryParams.append('type', filters.type);
+        
+        // Only add type filter if a specific type is selected
+        if (filters.type && filters.type !== '') {
+            queryParams.append('type', filters.type);
+        }
+        
         if (filters.date_from) queryParams.append('date_from', filters.date_from);
         if (filters.date_to) queryParams.append('date_to', filters.date_to);
         if (filters.min_amount) queryParams.append('min_amount', filters.min_amount);

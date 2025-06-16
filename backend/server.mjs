@@ -189,13 +189,17 @@ app.get('/api/stats/monthly', async (req, res) => {
 
 // 5. GET /transactions/types
 app.get('/api/transactions/types', async (req, res) => {
-  try {
-    // Return the predefined transaction types
-    res.json(Object.values(TRANSACTION_TYPES));
-  } catch (error) {
-    console.error('Error fetching transaction types:', error);
-    res.status(500).json({ error: 'Failed to fetch transaction types' });
-  }
+    try {
+        // Return the transaction types in a more readable format
+        const types = Object.entries(TRANSACTION_TYPES).map(([key, value]) => ({
+            id: value,
+            name: key.split('_').map(word => word.charAt(0) + word.slice(1).toLowerCase()).join(' ')
+        }));
+        res.json(types);
+    } catch (error) {
+        console.error('Error fetching transaction types:', error);
+        res.status(500).json({ error: 'Failed to fetch transaction types' });
+    }
 });
 
 app.listen(port, () => {
