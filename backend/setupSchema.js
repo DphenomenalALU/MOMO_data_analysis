@@ -13,7 +13,7 @@ const db = new pg.Pool({
 
 async function setupSchema() {
   try {
-    const schema = fs.readFileSync('./src/schema.sql', 'utf8');
+    const schema = fs.readFileSync('schema.sql', 'utf8');
     const client = await db.connect();
     await client.query(schema);
     console.log('Schema successfully created!');
