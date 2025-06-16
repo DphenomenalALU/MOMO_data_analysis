@@ -1,185 +1,67 @@
-# MTN MOMO Transaction Analysis
+# MTN MoMo Transaction Analysis Dashboard
 
-A web application for analyzing MTN Mobile Money (MOMO) transactions. Built with Express.js backend and vanilla JavaScript frontend.
+## Environment Setup
+
+1. Create a `.env` file in the root directory with the following content:
+```
+# API Configuration
+API_URL=http://localhost:3000/api
+
+# Environment
+NODE_ENV=development
+```
+
+2. Update the `API_URL` to match your backend server URL
+3. Set `NODE_ENV` to 'production' for production deployment
+
+## API Integration
+
+The dashboard integrates with the following API endpoints:
+
+- `GET /api/transactions` - Fetch transactions with filtering and pagination
+- `GET /api/stats` - Get transaction statistics
+- `GET /api/trends/monthly` - Get monthly transaction trends
+- `GET /api/transactions/export` - Export transactions to CSV
+
+### API Parameters
+
+#### Transactions Endpoint
+- `page` - Page number (default: 1)
+- `limit` - Items per page (default: 10)
+- `startDate` - Start date filter (ISO format)
+- `endDate` - End date filter (ISO format)
+- `transactionType` - Filter by transaction type
+- `sortBy` - Sort field (default: 'date')
+- `sortOrder` - Sort order ('asc' or 'desc')
+
+#### Stats Endpoint
+- `startDate` - Start date filter
+- `endDate` - End date filter
+- `transactionType` - Filter by transaction type
+
+#### Monthly Trends Endpoint
+- `year` - Filter by year
+- `transactionType` - Filter by transaction type
 
 ## Features
 
-- Transaction filtering by type, date range, and amount
-- Interactive charts showing monthly trends and transaction type distribution
-- Detailed transaction view with counterparty information
-- PDF export functionality
-- Responsive design with MTN MoMo brand colors
 - Real-time data updates
-
-## Project Structure
-
-```
-MOMO_data_analysis/
-├── backend/
-│   ├── data/               # Data files (XML transaction data)
-│   ├── logs/              # Application logs
-│   ├── src/               # Source files
-│   │   └── dataProcessor.mjs
-│   ├── utils/             # Utility scripts
-│   │   ├── importData.mjs
-│   │   └── verifyData.mjs
-│   ├── server.mjs         # Main server file
-│   ├── schema.sql         # Database schema
-│   └── package.json
-│
-└── frontend/
-    ├── assets/            # Images and static assets
-    │   ├── mtn-momo-logo.webp
-    │   └── momo-favicon.png
-    ├── css/
-    │   └── styles.css
-    ├── js/
-    │   ├── api.js         # API client
-    │   ├── app.js         # Main application logic
-    │   ├── charts.js      # Chart configurations
-    │   └── transactions.js # Transaction management
-    └── index.html
-```
-
-## Prerequisites
-
-- Node.js (v14 or higher)
-- PostgreSQL (v12 or higher) or a Neon.tech account
-- Git
-
-## Setup Instructions
-
-### 1. Database Setup
-
-You can either use a local PostgreSQL database or set up a free cloud database with Neon.tech:
-
-#### Option A: Neon.tech Cloud Database (Recommended)
-
-1. Create a free PostgreSQL database on [Neon.tech](https://neon.tech):
-   - Sign up for a Neon account
-   - Create a new project
-   - Create a new database named `momo-analysis`
-   - Get your database connection string from the dashboard
-
-2. Your connection string will look similar to:
-   ```
-   postgresql://user:password@ep-xxxxx-pooler.region.aws.neon.tech/dbname?sslmode=require
-   ```
-
-#### Option B: Local PostgreSQL Database
-
-1. Install PostgreSQL on your machine
-2. Create a new database:
-   ```bash
-   createdb momo_db
-   ```
-3. Your connection string will be:
-   ```
-   postgresql://username:password@localhost:5432/momo_db
-   ```
-
-### 2. Application Setup
-
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/DphenomenalALU/MOMO_data_analysis.git
-   cd MOMO_data_analysis
-   ```
-
-2. Install backend dependencies:
-   ```bash
-   cd backend
-   npm install
-   ```
-
-3. Create a `.env` file in the backend directory:
-   ```env
-   # Database Configuration
-   DATABASE_URL='your-database-connection-string'
-   
-   # Node Environment
-   NODE_ENV=development
-   ```
-   Replace 'your-database-connection-string' with either your Neon.tech connection string or local PostgreSQL connection string.
-
-4. Import initial data:
-   ```bash
-   npm run import-data
-   ```
-
-5. Verify data import:
-   ```bash
-   npm run verify-data
-   ```
-
-### 3. Starting the Application
-
-1. Start the backend server:
-   ```bash
-   cd backend
-   npm start
-   ```
-
-2. Access the application:
-   - Open `http://localhost:3000` in your browser
-   - The frontend will be served automatically by the backend
-
-## API Endpoints
-
-- `GET /api/transactions` - List transactions with filters
-  - Query params: type, date_from, date_to, min_amount, max_amount
-
-- `GET /api/transactions/:id` - Get transaction details
-
-- `GET /api/stats/summary` - Get transaction statistics
-  - Returns: total_transactions, total_volume, avg_amount, min_amount, max_amount
-
-- `GET /api/stats/monthly` - Get monthly statistics
-  - Returns: transaction_count, total_amount, avg_amount by month
-
-- `GET /api/transactions/types` - Get available transaction types
-
-## Data Range
-
-The application contains transaction data from May 10, 2024, to January 16, 2025. The date filters in the UI are automatically restricted to this range.
-
-## Transaction Types
-
-- INCOMING_MONEY - Received money transfers
-- PAYMENT_TO_CODE - Payments to code holders
-- TRANSFER_TO_MOBILE - Transfers to mobile numbers
-- BANK_DEPOSIT - Bank deposits
-- AIRTIME_PAYMENT - Airtime purchases
-- CASH_POWER - Electricity bill payments
-- THIRD_PARTY - Third-party initiated transactions
-- WITHDRAWAL - Cash withdrawals from agents
-- BANK_TRANSFER - Bank transfers
-- INTERNET_BUNDLE - Internet and voice bundle purchases
-
-## Styling
-
-The application uses MTN MoMo's brand colors:
-- Primary Blue: #004f71
-- Secondary Yellow: #ffcc00
-
-## Error Handling
-
-The application includes:
-- Retry mechanism for loading transaction types
-- User-friendly error messages
-- Loading states for all operations
-- Proper error logging
+- Advanced filtering options
+- Pagination support
+- CSV export functionality
+- Error handling and loading states
+- Responsive design
+- Interactive charts with Chart.js
 
 ## Development
 
-To verify data integrity:
-```bash
-cd backend
-npm run verify-data    # Verify data integrity
-```
+1. Clone the repository
+2. Set up environment variables
+3. Install dependencies
+4. Start the development server
 
-## Logs
+## Production Deployment
 
-Application logs are stored in:
-- `backend/logs/unprocessed.log` - Transaction processing logs
-- `backend/logs/processing-stats.json` - Data import statistics
+1. Update `.env` with production API URL
+2. Set NODE_ENV to 'production'
+3. Build and deploy to any hosting platform

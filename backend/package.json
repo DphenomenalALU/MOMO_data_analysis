@@ -3,19 +3,23 @@
   "version": "1.0.0",
   "type": "module",
   "description": "Backend for MTN MoMo Transaction Analysis",
-  "main": "server.mjs",
+  "main": "server.js",
   "scripts": {
-    "start": "node server.mjs",
-    "import-data": "node utils/importData.mjs",
-    "verify-data": "node utils/verifyData.mjs"
+    "start": "node src/api.mjs",
+    "dev": "nodemon src/api.mjs",
+    "process-data": "node processData.js",
+    "setup-db": "psql -U postgres -d momo_transactions -f schema.sql"
   },
   "dependencies": {
     "cors": "^2.8.5",
     "date-fns": "^2.30.0",
-    "dotenv": "^16.5.0",
-    "express": "^4.21.2",
-    "pg": "^8.16.0",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "pg": "^8.11.3",
     "winston": "^3.11.0",
     "xml2js": "^0.6.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
   }
 }
