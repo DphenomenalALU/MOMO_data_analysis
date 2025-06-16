@@ -12,7 +12,7 @@ dotenv.config({ path: path.join(__dirname, '..', '.env') });
 async function importData() {
   try {
     const processor = new DataProcessor();
-    const xmlFilePath = path.join(__dirname, '..', 'modified_sms_v2.xml');
+    const xmlFilePath = path.join(__dirname, '..', 'data', 'modified_sms_v2.xml');
     
     console.log('Starting data import...');
     const stats = await processor.processXMLFile(xmlFilePath);

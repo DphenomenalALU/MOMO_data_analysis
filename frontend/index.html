@@ -3,89 +3,146 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MOMO Transaction Analysis</title>
+    <title>MTN MOMO Transaction Analysis</title>
+    <link rel="icon" type="image/png" href="assets/momo-favicon.png">
+    <link rel="shortcut icon" type="image/png" href="assets/momo-favicon.png">
+    <link rel="apple-touch-icon" href="assets/momo-favicon.png">
     <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>MOMO Transaction Analysis</h1>
-            <div class="summary-stats" id="summaryStats">
-                <!-- Summary stats will be populated here -->
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="logo-container">
+                <img src="assets/mtn-momo-logo.webp" alt="MTN MoMo" class="logo">
             </div>
-        </header>
+            <div class="sidebar-item active">
+                <i class="fas fa-home"></i>
+                <span>Dashboard</span>
+            </div>
+            <div class="sidebar-item" data-type="INCOMING_MONEY">
+                <i class="fas fa-coins"></i>
+                <span>Incoming money</span>
+            </div>
+            <div class="sidebar-item" data-type="PAYMENT_TO_CODE">
+                <i class="fas fa-code"></i>
+                <span>Payments to code holders</span>
+            </div>
+            <div class="sidebar-item" data-type="TRANSFER_TO_MOBILE">
+                <i class="fas fa-mobile-alt"></i>
+                <span>Mobile no transfers</span>
+            </div>
+            <div class="sidebar-item" data-type="BANK_DEPOSIT">
+                <i class="fas fa-university"></i>
+                <span>Bank deposits</span>
+            </div>
+            <div class="sidebar-item" data-type="AIRTIME_PAYMENT">
+                <i class="fas fa-phone"></i>
+                <span>Airtime bill payment</span>
+            </div>
+            <div class="sidebar-item" data-type="CASH_POWER">
+                <i class="fas fa-bolt"></i>
+                <span>Cash power bill payments</span>
+            </div>
+            <div class="sidebar-item" data-type="THIRD_PARTY">
+                <i class="fas fa-users"></i>
+                <span>Third-party transactions</span>
+            </div>
+            <div class="sidebar-item" data-type="WITHDRAWAL">
+                <i class="fas fa-hand-holding-usd"></i>
+                <span>Withdraws from agents</span>
+            </div>
+            <div class="sidebar-item" data-type="BANK_TRANSFER">
+                <i class="fas fa-exchange-alt"></i>
+                <span>Bank transfers</span>
+            </div>
+            <div class="sidebar-item" data-type="INTERNET_BUNDLE">
+                <i class="fas fa-globe"></i>
+                <span>Internet/Voice Bundles</span>
+            </div>
+        </aside>
+        <main class="main-content">
+            <div class="container">
+                <header>
+                    <h1>MOMO Transaction Analysis</h1>
+                    <div class="summary-stats" id="summaryStats">
+                        <!-- Summary stats will be populated here -->
+                    </div>
+                </header>
 
-        <section class="filters">
-            <h2>Search & Filter</h2>
-            <div class="filter-form">
-                <div class="form-group">
-                    <label for="transactionType">Transaction Type:</label>
-                    <select id="transactionType">
-                        <option value="">All Types</option>
-                        <option value="INCOMING_MONEY">Incoming Money</option>
-                        <option value="PAYMENT_TO_CODE">Payments to Code Holders</option>
-                        <option value="TRANSFER_TO_MOBILE">Transfers to Mobile Numbers</option>
-                        <option value="BANK_DEPOSIT">Bank Deposits</option>
-                        <option value="AIRTIME_PAYMENT">Airtime Bill Payments</option>
-                        <option value="CASH_POWER">Cash Power Bill Payments</option>
-                        <option value="THIRD_PARTY">Transactions Initiated by Third Parties</option>
-                        <option value="WITHDRAWAL">Withdrawals from Agents</option>
-                        <option value="BANK_TRANSFER">Bank Transfers</option>
-                        <option value="INTERNET_BUNDLE">Internet and Voice Bundle Purchases</option>
-                    </select>
+                <section class="filters">
+                    <h2>Search & Filter</h2>
+                    <div class="filter-form">
+                        <div class="form-group">
+                            <label for="transactionType">Transaction Type:</label>
+                            <select id="transactionType">
+                                <option value="">All Types</option>
+                                <option value="INCOMING_MONEY">Incoming Money</option>
+                                <option value="PAYMENT_TO_CODE">Payments to Code Holders</option>
+                                <option value="TRANSFER_TO_MOBILE">Transfers to Mobile Numbers</option>
+                                <option value="BANK_DEPOSIT">Bank Deposits</option>
+                                <option value="AIRTIME_PAYMENT">Airtime Bill Payments</option>
+                                <option value="CASH_POWER">Cash Power Bill Payments</option>
+                                <option value="THIRD_PARTY">Transactions Initiated by Third Parties</option>
+                                <option value="WITHDRAWAL">Withdrawals from Agents</option>
+                                <option value="BANK_TRANSFER">Bank Transfers</option>
+                                <option value="INTERNET_BUNDLE">Internet and Voice Bundle Purchases</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="dateFrom">From Date:</label>
+                            <input type="date" id="dateFrom">
+                        </div>
+                        <div class="form-group">
+                            <label for="dateTo">To Date:</label>
+                            <input type="date" id="dateTo">
+                        </div>
+                        <div class="form-group">
+                            <label for="minAmount">Min Amount:</label>
+                            <input type="number" id="minAmount" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="maxAmount">Max Amount:</label>
+                            <input type="number" id="maxAmount" min="0">
+                        </div>
+                        <div class="filter-buttons">
+                            <button id="applyFilters">Apply Filters</button>
+                            <button id="exportPDF" class="secondary">Export as PDF</button>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="charts-container">
+                    <section class="chart-section">
+                        <h2>Monthly Transaction Summary</h2>
+                        <canvas id="monthlyChart"></canvas>
+                    </section>
+
+                    <section class="chart-section">
+                        <h2>Transaction Type Distribution</h2>
+                        <canvas id="typeDistributionChart"></canvas>
+                    </section>
                 </div>
-                <div class="form-group">
-                    <label for="dateFrom">From Date:</label>
-                    <input type="date" id="dateFrom">
-                </div>
-                <div class="form-group">
-                    <label for="dateTo">To Date:</label>
-                    <input type="date" id="dateTo">
-                </div>
-                <div class="form-group">
-                    <label for="minAmount">Min Amount:</label>
-                    <input type="number" id="minAmount" min="0">
-                </div>
-                <div class="form-group">
-                    <label for="maxAmount">Max Amount:</label>
-                    <input type="number" id="maxAmount" min="0">
-                </div>
-                <div class="filter-buttons">
-                    <button id="applyFilters">Apply Filters</button>
-                    <button id="exportPDF" class="secondary">Export as PDF</button>
+
+                <section class="transactions">
+                    <h2>Recent Transactions</h2>
+                    <div class="transactions-list" id="transactionsList">
+                        <!-- Transactions will be populated here -->
+                    </div>
+                </section>
+
+                <div id="transactionModal" class="modal">
+                    <div class="modal-content">
+                        <span class="close">&times;</span>
+                        <h2>Transaction Details</h2>
+                        <div id="transactionDetails">
+                            <!-- Transaction details will be populated here -->
+                        </div>
+                    </div>
                 </div>
             </div>
-        </section>
-
-        <div class="charts-container">
-            <section class="chart-section">
-                <h2>Monthly Transaction Summary</h2>
-                <canvas id="monthlyChart"></canvas>
-            </section>
-
-            <section class="chart-section">
-                <h2>Transaction Type Distribution</h2>
-                <canvas id="typeDistributionChart"></canvas>
-            </section>
-        </div>
-
-        <section class="transactions">
-            <h2>Recent Transactions</h2>
-            <div class="transactions-list" id="transactionsList">
-                <!-- Transactions will be populated here -->
-            </div>
-        </section>
-
-        <div id="transactionModal" class="modal">
-            <div class="modal-content">
-                <span class="close">&times;</span>
-                <h2>Transaction Details</h2>
-                <div id="transactionDetails">
-                    <!-- Transaction details will be populated here -->
-                </div>
-            </div>
-        </div>
+        </main>
     </div>
 
     <script src="js/api.js"></script>

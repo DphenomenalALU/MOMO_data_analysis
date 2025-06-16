@@ -28,19 +28,6 @@ const app = express();
 const port = 3000;
 env.config();
 
-// Add initial data check
-async function checkDatabaseData() {
-    try {
-        const countResult = await db.query('SELECT COUNT(*) FROM transactions');
-        console.log('Total transactions in database:', countResult.rows[0].count);
-        
-        const typesResult = await db.query('SELECT type, COUNT(*) FROM transactions GROUP BY type');
-        console.log('Transactions by type:', typesResult.rows);
-    } catch (error) {
-        console.error('Error checking database data:', error);
-    }
-}
-
 // Middleware
 app.use(cors());
 app.use(express.json());
@@ -56,10 +43,12 @@ const db = new pg.Client({
 
 db.connect()
 .then(() => {
-    console.log('server.js Connected to DB');
-    checkDatabaseData(); // Check data after connection
+    console.log('Database connection established successfully');
 })
-.catch(err => console.error('server.js DB connection error', err));
+.catch(err => {
+    console.error('Database connection error:', err);
+    process.exit(1);
+});
 
 // Serve frontend
 app.get('/', (req, res) => {

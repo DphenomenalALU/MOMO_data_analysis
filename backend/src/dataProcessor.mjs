@@ -343,9 +343,15 @@ class DataProcessor {
 
     } catch (error) {
       logger.error({
-        message: 'Error saving to database',
+        message: 'Error processing message',
         timestamp: new Date().toISOString(),
-        error: error.message
+        error: error.message,
+        transaction: {
+          body: sms.body,
+          address: sms.address,
+          protocol: sms.protocol,
+          service_center: sms.service_center
+        }
       });
       return false;
     }
