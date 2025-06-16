@@ -1,4 +1,4 @@
-import { DataProcessor } from './dataProcessor.mjs';
+import { DataProcessor } from '../src/dataProcessor.mjs'; // relative path  the module
 import path from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';

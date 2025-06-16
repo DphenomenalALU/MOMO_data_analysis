@@ -207,6 +207,21 @@ class DataProcessor {
 
   async processXMLFile(filePath) {
     try {
+
+          // First check if the table has any rows
+        const checkResult = await pool.query('SELECT COUNT(*) FROM transactions');
+        const rowCount = parseInt(checkResult.rows[0].count);
+        
+        if (rowCount > 0) {
+            console.log('Database already contains transactions. Skipping import.');
+            return {
+                processed: 0,
+                ignored: 0,
+                total: 0,
+                message: 'Database already contains transactions. Import skipped.'
+            };
+        }
+
       // Read and parse XML file
       const xmlData = fs.readFileSync(filePath, 'utf8');
       const parser = new xml2js.Parser({ explicitArray: false });
